@@ -14,7 +14,9 @@ PY = str(ROOT / ".venv" / "bin" / "python")
 
 COMMANDS = [("Unit tests", ["-m", "pytest", "-q"], False, None),
             ("Retrieval gate: hash baseline", ["-m", "raggate", "gate", "hash"], False, None),
-            ("Retrieval gate: nvidia/nv-embed-v1 (live)", ["-m", "raggate", "gate", "nvidia"], False, "NVIDIA_API_KEY")]
+            ("Retrieval gate: nvidia/nv-embed-v1 (live)", ["-m", "raggate", "gate", "nvidia"], False, "NVIDIA_API_KEY"),
+            ("Agentic mode: decomposition loop + grounding gate + coverage comparison", ["-m", "raggate", "agent"], False, None),
+            ("Hallucinating agent: refused", ["-m", "raggate", "agent", "hallucinating"], True, None)]
 
 out = [f"# Results\n",
        f"Generated {datetime.date.today()} by `scripts/make_results.py` — "

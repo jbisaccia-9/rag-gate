@@ -1,7 +1,10 @@
+LICENSE
 README.md
 pyproject.toml
 src/raggate/__init__.py
 src/raggate/__main__.py
+src/raggate/agent.py
+src/raggate/compare.py
 src/raggate/embed.py
 src/raggate/eval.py
 src/raggate/gate.py

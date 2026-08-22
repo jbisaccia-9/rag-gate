@@ -50,6 +50,28 @@ growing the corpus and adding stemming-resistant paraphrases where
 `nv-embed-v1` should pull ahead is the roadmap, and the harness is the
 instrument that will show it.
 
+## Agentic mode
+
+`python -m raggate agent` runs a real tool-calling loop: the model is handed a
+`search` tool and decomposes compound questions ("X and Y") into sub-queries —
+query decomposition, the simplest genuinely agentic retrieval pattern. Backends
+share one loop: a scripted decomposition policy for keyless CI (its answer is
+composed from the chunks it actually retrieved), and NVIDIA NIM tool-calling
+chat completions as the live path (`NVIDIA_CHAT_MODEL`, default
+llama-3.3-70b-instruct).
+
+The agent's answer faces its own gate: **grounding** — every `[doc#chunk]`
+citation must be a chunk retrieved this run. CI asserts a deliberately
+hallucinating backend is refused (`! python -m raggate agent hallucinating`).
+
+The measured comparison, reported as measured: on compound questions spanning
+two documents, **single-shot covers 4/4 and agentic covers 4/4 — a tie.** The
+corpus is too small for decomposition to show an advantage (five distinct docs,
+~2 chunks each; even a mixed embedding's top-3 spans both topics). Same
+saturation the embedder comparison found, same conclusion: the instrumentation
+is ready, the corpus is the roadmap. What the agentic mode demonstrably adds
+today is the loop mechanics and the grounding gate.
+
 ## Quickstart
 
 ```
@@ -58,6 +80,7 @@ python -m venv .venv
 .venv/bin/pip install -e ".[dev]"
 .venv/bin/python -m pytest -q
 .venv/bin/python -m raggate gate hash
+.venv/bin/python -m raggate agent
 ```
 
 With `NVIDIA_API_KEY` set: `python -m raggate gate nvidia`.

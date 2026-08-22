@@ -32,10 +32,14 @@ class Index:
         self.rows = []          # (vector, doc_id, chunk_text)
 
     def add_document(self, doc_id, text):
-        for c in chunk(text):
-            self.rows.append((self.embedder.embed(c), doc_id, c))
+        for n, c in enumerate(chunk(text)):
+            self.rows.append((self.embedder.embed(c), doc_id, f"{doc_id}#{n}", c))
 
     def search(self, query, k=3):
+        return [(d, t) for d, _, t in self.search_ids(query, k)]
+
+    def search_ids(self, query, k=3):
+        """(doc_id, chunk_id, text) triples - chunk ids ground agent citations."""
         qv = self.embedder.embed(query)
         scored = sorted(self.rows, key=lambda r: -cosine(qv, r[0]))
-        return [(doc_id, text) for _, doc_id, text in scored[:k]]
+        return [(doc_id, cid, text) for _, doc_id, cid, text in scored[:k]]

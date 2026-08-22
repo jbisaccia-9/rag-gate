@@ -38,3 +38,29 @@ def test_hash_baseline_clears_gate():
 def test_gate_refuses_weak_report():
     assert check({"embedder": "x", "k": 3, "queries": 12,
                   "recall_at_k": 0.75, "mrr": 0.6, "missed": []}) == 1
+
+
+def test_agent_decomposes_and_grounds():
+    from raggate.agent import run_agent, grounding_gate, ScriptedModel
+    from raggate.eval import build_index
+    idx = build_index(HashEmbedder())
+    q = "Why do degraded reefs fall quiet and why does warm ice weaken radar returns?"
+    answer, retrieved = run_agent(ScriptedModel(), idx, q)
+    assert len(retrieved) == 4              # two sub-queries x k=2
+    assert grounding_gate(answer, retrieved) == 0
+
+
+def test_hallucinated_citation_refused():
+    from raggate.agent import run_agent, grounding_gate, HallucinatingModel
+    from raggate.eval import build_index
+    idx = build_index(HashEmbedder())
+    answer, retrieved = run_agent(HallucinatingModel(), idx,
+                                  "What do hydrophones record on healthy reefs and what makes bioreactor scale-up hard?")
+    assert grounding_gate(answer, retrieved) == 1
+
+
+def test_agentic_coverage_not_worse_than_single_shot():
+    from raggate.compare import run_comparison
+    r = run_comparison()
+    assert r["grounding_failures"] == 0
+    assert r["agentic_full_coverage"] >= r["single_shot_full_coverage"]
