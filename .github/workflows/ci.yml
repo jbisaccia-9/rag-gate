@@ -9,6 +9,7 @@ jobs:
         with: {python-version: "3.12"}
       - run: pip install -e ".[dev]"
       - run: pytest -q
+      - run: python -m raggate suite
       - run: python -m raggate gate hash
       - run: python -m raggate agent
       # A hallucinating agent must be refused by the grounding gate.

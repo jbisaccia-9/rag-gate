@@ -20,6 +20,45 @@ anything served.
 Part of the *-gate* family — see [github.com/jbisaccia-9](https://github.com/jbisaccia-9)
 for the full set. One thesis: nothing ships until it passes a gate.
 
+## The flow
+
+```mermaid
+flowchart TB
+    DOCS["5 synthetic documents"] --> CH["paragraph-aware chunking with overlap"]
+    CH --> EMB["embedder: hash baseline or nvidia nv-embed-v1"]
+    EMB --> IDX["index: exact cosine top-k"]
+    Q["12 labeled queries"] --> EV["recall at 3 + MRR vs labels"]
+    IDX --> EV
+    EV --> RG{"retrieval gate: recall at 3 >= 0.90"}
+    RG -- "pass" --> SERVE["index may serve"]
+    RG -- "fail" --> NO["index refused (caught its own baseline at 0.83)"]
+
+    subgraph AGENT["agentic mode: decomposition loop"]
+        MODEL["model: scripted for CI, NVIDIA NIM chat live"]
+        MODEL -- "tool_use: search(sub-query)" --> IDX2["gated index"]
+        IDX2 -- "tool_result: chunks" --> MODEL
+        MODEL -- "final answer with doc#chunk citations" --> ANS["answer"]
+    end
+    IDX --> IDX2
+    ANS --> AG{"grounding gate: every citation actually retrieved?"}
+    AG -- "pass" --> OK2["answer stands"]
+    AG -- "fail" --> NO2["answer refused: retrieval theater"]
+
+    subgraph EVAL["Braintrust-shaped eval: data, task, scorers"]
+        D["data: labeled + compound queries"] --> T["task: retrieve / agent run"] --> SC["scorers: hit_at_3, agentic_coverage_holds, agent_grounding"]
+    end
+    SC -- "regression" --> CIF["CI fails"]
+    SC -.-> BT["Braintrust hosted tracking (obs extra)"]
+```
+
+## Eval structure (Braintrust-shaped)
+
+`python -m raggate suite` runs the `Eval(data, task, scores)` contract
+keyless: `hit_at_3` over the labeled queries, `agentic_coverage_holds` (the
+agent may never cover less than single-shot), and `agent_grounding`. Any
+regression fails CI; the obs extra pushes the identical suite to hosted
+Braintrust.
+
 ## Origin
 
 This pipeline began as my assessment work for the **NVIDIA DLI "Building RAG

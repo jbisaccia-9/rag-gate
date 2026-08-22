@@ -68,3 +68,27 @@ ANSWER GATE: FAILED - the answer cites chunks the agent never saw.
   c4: single-shot FULL ['coral-acoustics', 'glacier-radar', 'night-trains'] | agentic FULL ['coral-acoustics', 'glacier-radar', 'night-trains', 'solar-thermal']
 coverage: single-shot 4/4, agentic 4/4; grounding failures: 4
 ```
+
+## Braintrust-shaped eval suite
+
+`python -m raggate suite` — exit 0, OK
+
+```
+PASS  answer grounding: 3 citations, 0 never retrieved
+ANSWER GATE: PASSED - every citation was actually retrieved.
+  PASS  answer grounding: 3 citations, 0 never retrieved
+ANSWER GATE: PASSED - every citation was actually retrieved.
+  PASS  answer grounding: 2 citations, 0 never retrieved
+ANSWER GATE: PASSED - every citation was actually retrieved.
+  PASS  answer grounding: 4 citations, 0 never retrieved
+ANSWER GATE: PASSED - every citation was actually retrieved.
+  c1: single-shot FULL ['glacier-radar', 'night-trains', 'solar-thermal'] | agentic FULL ['glacier-radar', 'night-trains', 'solar-thermal']
+  c2: single-shot FULL ['coral-acoustics', 'fermentation', 'solar-thermal'] | agentic FULL ['coral-acoustics', 'fermentation', 'solar-thermal']
+  c3: single-shot FULL ['glacier-radar', 'night-trains', 'solar-thermal'] | agentic FULL ['night-trains', 'solar-thermal']
+  c4: single-shot FULL ['coral-acoustics', 'glacier-radar', 'night-trains'] | agentic FULL ['coral-acoustics', 'glacier-radar', 'night-trains', 'solar-thermal']
+coverage: single-shot 4/4, agentic 4/4; grounding failures: 0
+  hit_at_3: 1.0
+  agentic_coverage_holds: 1.0
+  agent_grounding: 1.0
+SUITE: PASS - retrieval and agent hold.
+```

@@ -10,6 +10,7 @@ requires-python = ">=3.9"
 
 [project.optional-dependencies]
 dev = ["pytest"]
+obs = ["braintrust"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
