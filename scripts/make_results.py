@@ -12,12 +12,19 @@ import subprocess
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PY = str(ROOT / ".venv" / "bin" / "python")
 
-COMMANDS = [("Unit tests", ["-m", "pytest", "-q"], False), ("Retrieval gate: hash baseline", ["-m", "raggate", "gate", "hash"], False)]
+COMMANDS = [("Unit tests", ["-m", "pytest", "-q"], False, None),
+            ("Retrieval gate: hash baseline", ["-m", "raggate", "gate", "hash"], False, None),
+            ("Retrieval gate: nvidia/nv-embed-v1 (live)", ["-m", "raggate", "gate", "nvidia"], False, "NVIDIA_API_KEY")]
 
 out = [f"# Results\n",
        f"Generated {datetime.date.today()} by `scripts/make_results.py` — "
        f"every block below is captured command output, not prose.\n"]
-for title, cmd, expect_fail in COMMANDS:
+import os
+for title, cmd, expect_fail, requires_env in COMMANDS:
+    if requires_env and not os.environ.get(requires_env):
+        out.append(f"## {title}\n\nSkipped this regeneration: `{requires_env}` not set. "
+                   f"The last recorded run of this section is preserved in git history.\n")
+        continue
     r = subprocess.run([PY] + cmd, cwd=ROOT, capture_output=True, text=True)
     body = (r.stdout + r.stderr).strip()
     verdict = "expected non-zero exit" if expect_fail else "exit 0"

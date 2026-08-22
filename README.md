@@ -36,12 +36,19 @@ the course version lacked. The `nvidia` embedder mode calls the same
 | `hash` | deterministic bag-of-words baseline (feature hashing, stopword-filtered) | no |
 | `nvidia` | `nvidia/nv-embed-v1` via the NIM embeddings API | yes |
 
+| embedder | recall@3 | MRR | gate |
+|---|---|---|---|
+| hash-bow (keyless baseline) | 1.00 | 0.9583 | passed |
+| nvidia/nv-embed-v1 (live, recorded) | 1.00 | 0.9583 | passed |
+
 The corpus is five short synthetic documents on deliberately distinct topics;
 the 12 labeled queries include paraphrase cases with minimal keyword overlap.
-Honest caveat: at this corpus size the baseline now scores 1.00, which says
-the labeled set is too easy — growing the corpus and adding
-stemming-resistant paraphrases (where `nv-embed-v1` should separate from the
-baseline) is the roadmap.
+The measured finding: **both embedders score identically** — the labeled set
+is saturated and cannot discriminate a semantic embedder from bag-of-words at
+this corpus size. That is not a success story, it is the next work item:
+growing the corpus and adding stemming-resistant paraphrases where
+`nv-embed-v1` should pull ahead is the roadmap, and the harness is the
+instrument that will show it.
 
 ## Quickstart
 
