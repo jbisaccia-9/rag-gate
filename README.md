@@ -2,6 +2,8 @@
 
 [![ci](https://github.com/jbisaccia-9/rag-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/jbisaccia-9/rag-gate/actions) · [captured results](RESULTS.md)
 
+![the answer gate refusing an ungrounded citation, then passing a grounded answer](docs/demo.gif)
+
 **A RAG index must pass a retrieval gate before it is allowed to serve.**
 
 An index that cannot find the right document is not a knowledge base — it is a
